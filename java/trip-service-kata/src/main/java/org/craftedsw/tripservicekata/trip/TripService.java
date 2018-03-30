@@ -13,20 +13,21 @@ public class TripService {
         List<Trip> tripList = new ArrayList<>();
         final User loggedUser = this.getLoggedUser();
         boolean isFriend = false;
-        if (loggedUser != null) {
-            for (final User friend : user.getFriends()) {
-                if (friend.equals(loggedUser)) {
-                    isFriend = true;
-                    break;
-                }
-            }
-            if (isFriend) {
-                tripList = this.findFriendTrips(user);
-            }
-            return tripList;
-        } else {
+
+        if (loggedUser == null) {
             throw new UserNotLoggedInException();
         }
+
+        for (final User friend : user.getFriends()) {
+            if (friend.equals(loggedUser)) {
+                isFriend = true;
+                break;
+            }
+        }
+        if (isFriend) {
+            tripList = this.findFriendTrips(user);
+        }
+        return tripList;
     }
 
     protected List<Trip> findFriendTrips(User user) {
@@ -34,6 +35,7 @@ public class TripService {
     }
 
     protected User getLoggedUser() {
-        return UserSession.getInstance().getLoggedUser();
+        return UserSession.getInstance()
+                .getLoggedUser();
     }
 }
