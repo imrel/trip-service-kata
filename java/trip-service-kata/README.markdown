@@ -17,7 +17,7 @@ Details
 
 If you want to give it a go, the starting point is [TripServiceTest.java][3] and [TripService.java][4]. Try unit testing it following the rule above.
 
-For future comparisions, when you are done, you can always check [TripService_Original.java][2]
+For future comparisons, when you are done, you can always check [TripService_Original.java][2]
 
 [1]: http://codurance.com/2011/07/16/testing-legacy-hard-wired-dependencies/ "Testing legacy code: Hard-wired dependencies blog post"
 [2]: https://github.com/sandromancuso/trip-service-kata/blob/master/java/trip-service-kata/src/main/java/org/craftedsw/tripservicekata/TripService_Original.java "TripService_Original.java"
