@@ -11,6 +11,9 @@
        <mockito.version>2.13.0</mockito.version>
        <assertj.version>3.9.0</assertj.version>
        <!--<spring.version>3.1.1.RELEASE</spring.version>-->
+
+       <maven.compiler.target>1.8</maven.compiler.target>
+       <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
 
     <dependencies>

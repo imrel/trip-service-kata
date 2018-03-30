@@ -4,13 +4,13 @@ import org.craftedsw.tripservicekata.exception.CollaboratorCallException;
 
 public class UserSession {
 
-    private static final UserSession userSession = new UserSession();
+    private static final UserSession USER_SESSION = new UserSession();
 
     private UserSession() {
     }
 
     public static UserSession getInstance() {
-        return userSession;
+        return USER_SESSION;
     }
 
     public User getLoggedUser() {
