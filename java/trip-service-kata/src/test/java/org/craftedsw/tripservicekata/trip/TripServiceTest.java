@@ -40,7 +40,7 @@ public class TripServiceTest {
 
         //when/then
         assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(
-                () -> this.service.getTripsByUser(this.user, GUEST));
+                () -> this.service.getFriendTrips(this.user, GUEST));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class TripServiceTest {
         //given
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
@@ -62,7 +62,7 @@ public class TripServiceTest {
         this.user.addTrip(TO_TALLINN);
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
@@ -77,7 +77,7 @@ public class TripServiceTest {
         given(this.tripDAO.findByUser(this.user)).willReturn(this.user.trips());
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEqualTo(this.user.trips());

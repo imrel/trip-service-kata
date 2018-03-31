@@ -13,7 +13,6 @@ public class TripDAO {
     }
 
     public List<Trip> findByUser(User user) {
-
         return findTripsByUser(user);
     }
 }
