@@ -23,8 +23,6 @@ public class TripServiceTest {
     public MockitoRule rule = MockitoJUnit.rule()
             .strictness(Strictness.STRICT_STUBS);
 
-
-    private User loggedUser = REGISTERED_USER;
     private final User user = new User();
 
     final TripService service = new TestableTripService();
@@ -32,10 +30,10 @@ public class TripServiceTest {
     @Test
     public void should_throw_when_no_user_session_found() throws Exception {
         //given
-        this.loggedUser = GUEST;
 
         //when/then
-        assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(() -> this.service.getTripsByUser(null));
+        assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(
+                () -> this.service.getTripsByUser(this.user, GUEST));
     }
 
     @Test
@@ -43,7 +41,7 @@ public class TripServiceTest {
         //given
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
@@ -57,7 +55,7 @@ public class TripServiceTest {
         this.user.addTrip(TO_TALLINN);
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
@@ -66,22 +64,17 @@ public class TripServiceTest {
     @Test
     public void should_return_user_trips() throws Exception {
         //given
-        this.user.addFriend(this.loggedUser);
+        this.user.addFriend(REGISTERED_USER);
         this.user.addTrip(TO_TALLINN);
 
         //when
-        final List<Trip> trips = this.service.getTripsByUser(this.user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEqualTo(this.user.trips());
     }
 
     private class TestableTripService extends TripService {
-
-        @Override
-        protected User getLoggedUser() {
-            return TripServiceTest.this.loggedUser;
-        }
 
         @Override
         protected List<Trip> findFriendTrips(User user) {
