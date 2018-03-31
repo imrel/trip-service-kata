@@ -8,51 +8,42 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
 
 public class TripServiceTest {
+
+    private static final User GUEST = null;
+    private static final User REGISTERED_USER = new User();
+    private static final Trip TO_TALLINN = new Trip();
 
     @Rule
     public MockitoRule rule = MockitoJUnit.rule()
             .strictness(Strictness.STRICT_STUBS);
 
 
-    User loggedUser = new User();
-    final List<Trip> tripList = new ArrayList<>();
+    private User loggedUser = REGISTERED_USER;
+    private final User user = new User();
 
-    final TripService service = new TripService() {
-        @Override
-        protected User getLoggedUser() {
-            return TripServiceTest.this.loggedUser;
-        }
-
-        @Override
-        protected List<Trip> findFriendTrips(User user) {
-            return TripServiceTest.this.tripList;
-        }
-    };
+    final TripService service = new TestableTripService();
 
     @Test
     public void should_throw_when_no_user_session_found() throws Exception {
         //given
-        loggedUser = null;
+        this.loggedUser = GUEST;
 
         //when/then
-        assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(() -> service.getTripsByUser(null));
+        assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(() -> this.service.getTripsByUser(null));
     }
 
     @Test
     public void no_trips_when_user_has_no_friends() throws Exception {
         //given
-        final User user = new User();
 
         //when
-        final List<Trip> trips = service.getTripsByUser(user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user);
 
         //then
         assertThat(trips).isEmpty();
@@ -61,12 +52,12 @@ public class TripServiceTest {
     @Test
     public void no_trips_when_user_has_friends_but_not_friend_with_logged_user() throws Exception {
         //given
-        final User user = new User();
-        user.addFriend(new User());
-        user.addFriend(new User());
+        this.user.addFriend(new User());
+        this.user.addFriend(new User());
+        this.user.addTrip(TO_TALLINN);
 
         //when
-        final List<Trip> trips = service.getTripsByUser(user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user);
 
         //then
         assertThat(trips).isEmpty();
@@ -75,14 +66,26 @@ public class TripServiceTest {
     @Test
     public void should_return_user_trips() throws Exception {
         //given
-        final User user = new User();
-        user.addFriend(loggedUser);
-        tripList.add(mock(Trip.class));
+        this.user.addFriend(this.loggedUser);
+        this.user.addTrip(TO_TALLINN);
 
         //when
-        final List<Trip> trips = service.getTripsByUser(user);
+        final List<Trip> trips = this.service.getTripsByUser(this.user);
 
         //then
-        assertThat(trips).isEqualTo(tripList);
+        assertThat(trips).isEqualTo(this.user.trips());
+    }
+
+    private class TestableTripService extends TripService {
+
+        @Override
+        protected User getLoggedUser() {
+            return TripServiceTest.this.loggedUser;
+        }
+
+        @Override
+        protected List<Trip> findFriendTrips(User user) {
+            return user.trips();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.craftedsw.tripservicekata.exception;
 
+@SuppressWarnings("unused")
 public class CollaboratorCallException extends RuntimeException {
 
     private static final long serialVersionUID = -4584041339906109902L;
