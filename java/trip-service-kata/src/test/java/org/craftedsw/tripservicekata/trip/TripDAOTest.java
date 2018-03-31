@@ -14,6 +14,7 @@ public class TripDAOTest {
         //given
 
         //when/then
-        assertThatExceptionOfType(CollaboratorCallException.class).isThrownBy(() -> new TripDAO().findTripsBy(new User()));
+        assertThatExceptionOfType(CollaboratorCallException.class).isThrownBy(
+                () -> new TripDAO().findByUser(new User()));
     }
 }

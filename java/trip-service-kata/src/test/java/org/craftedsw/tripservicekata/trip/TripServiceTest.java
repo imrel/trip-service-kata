@@ -4,6 +4,8 @@ import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -12,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
 
 public class TripServiceTest {
 
@@ -23,9 +26,13 @@ public class TripServiceTest {
     public MockitoRule rule = MockitoJUnit.rule()
             .strictness(Strictness.STRICT_STUBS);
 
-    private final User user = new User();
+    @Mock
+    private TripDAO tripDAO;
 
-    final TripService service = new TestableTripService();
+    @InjectMocks
+    final TripService service = new TripService();
+
+    private final User user = new User();
 
     @Test
     public void should_throw_when_no_user_session_found() throws Exception {
@@ -67,18 +74,12 @@ public class TripServiceTest {
         this.user.addFriend(REGISTERED_USER);
         this.user.addTrip(TO_TALLINN);
 
+        given(this.tripDAO.findByUser(this.user)).willReturn(this.user.trips());
+
         //when
         final List<Trip> trips = this.service.getTripsByUser(this.user, REGISTERED_USER);
 
         //then
         assertThat(trips).isEqualTo(this.user.trips());
-    }
-
-    private class TestableTripService extends TripService {
-
-        @Override
-        protected List<Trip> findFriendTrips(User user) {
-            return user.trips();
-        }
     }
 }
