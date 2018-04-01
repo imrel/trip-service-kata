@@ -9,10 +9,12 @@ public class UserTest {
     @Test
     public void should_check_if_isFriendsWith() throws Exception {
         //given
-        final User user = new User();
         final User friend = new User();
-        user.addFriend(friend);
         final User stranger = new User();
+
+        final User user = new UserBuilder()
+                .withFriends(friend)
+                .build();
 
         //when
         final boolean friendResult = user.isFriendsWith(friend);

@@ -2,6 +2,7 @@ package org.craftedsw.tripservicekata.trip;
 
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
+import org.craftedsw.tripservicekata.user.UserBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -40,15 +41,16 @@ public class TripServiceTest {
 
         //when/then
         assertThatExceptionOfType(UserNotLoggedInException.class).isThrownBy(
-                () -> this.service.getFriendTrips(this.user, GUEST));
+                () -> this.service.getFriendTrips(null, GUEST));
     }
 
     @Test
     public void no_trips_when_user_has_no_friends() throws Exception {
         //given
+        final User lonelyGuy = new User();
 
         //when
-        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(lonelyGuy, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
@@ -57,29 +59,32 @@ public class TripServiceTest {
     @Test
     public void no_trips_when_user_has_friends_but_not_friend_with_logged_user() throws Exception {
         //given
-        this.user.addFriend(new User());
-        this.user.addFriend(new User());
-        this.user.addTrip(TO_TALLINN);
+        final User notFriend = new UserBuilder()
+                .withFriends(new User(), new User())
+                .withTrips(TO_TALLINN)
+                .build();
 
         //when
-        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(notFriend, REGISTERED_USER);
 
         //then
         assertThat(trips).isEmpty();
     }
 
     @Test
-    public void should_return_user_trips() throws Exception {
+    public void should_return_friend_trips() throws Exception {
         //given
-        this.user.addFriend(REGISTERED_USER);
-        this.user.addTrip(TO_TALLINN);
+        final User friend = new UserBuilder()
+                .withFriends(new User(), REGISTERED_USER)
+                .withTrips(TO_TALLINN)
+                .build();
 
-        given(this.tripDAO.findByUser(this.user)).willReturn(this.user.trips());
+        given(this.tripDAO.findByUser(friend)).willReturn(friend.trips());
 
         //when
-        final List<Trip> trips = this.service.getFriendTrips(this.user, REGISTERED_USER);
+        final List<Trip> trips = this.service.getFriendTrips(friend, REGISTERED_USER);
 
         //then
-        assertThat(trips).isEqualTo(this.user.trips());
+        assertThat(trips).isEqualTo(friend.trips());
     }
 }
