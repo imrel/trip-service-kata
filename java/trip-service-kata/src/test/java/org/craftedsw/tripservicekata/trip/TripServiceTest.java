@@ -30,7 +30,7 @@ public class TripServiceTest {
     private TripDAO tripDAO;
 
     @InjectMocks
-    final TripService service = new TripService();
+    private final TripService service = new TripService();
 
     private final User user = new User();
 

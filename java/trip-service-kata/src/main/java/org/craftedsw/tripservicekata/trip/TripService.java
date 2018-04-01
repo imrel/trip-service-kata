@@ -20,13 +20,9 @@ public class TripService {
         }
 
         if (friend.isFriendsWith(loggedInUser)) {
-            return this.findFriendTrips(friend);
+            return this.tripDAO.findByUser(friend);
         }
 
         return NO_TRIPS;
-    }
-
-    protected List<Trip> findFriendTrips(User user) {
-        return this.tripDAO.findByUser(user);
     }
 }
